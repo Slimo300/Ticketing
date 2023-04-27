@@ -9,8 +9,7 @@ import { signUpRouter } from './routes/signup';
 
 import cookieSession from 'cookie-session';
 
-import { errorHandler } from './middleware/error-handler';
-import { NotFoundError } from './errors/not-found-error';
+import { errorHandler, NotFoundError } from '@ticketinglib/common';
 
 const app = express();
 app.set("trust proxy", true);

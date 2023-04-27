@@ -1,6 +1,6 @@
 import express, {Request, Response} from 'express';
 
-import { currentUser } from '../middleware/current-user';
+import { currentUser } from '@ticketinglib/common';
 
 const router = express.Router();
 
@@ -9,7 +9,7 @@ router.get("/api/users/currentuser", [
 ],
  (req: Request, res: Response) => {
 
-    res.send(req.currentUser);
+    res.send({currentUser: req.currentUser});
 });
 
 export {router as currentUserRouter};
