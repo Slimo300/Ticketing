@@ -1,25 +1,15 @@
 import axios from "axios";
+import BuildClient from "../api/build-client";
 
 const Index = ({currentUser}) => {
-    console.log(currentUser);
-    return <h1>Index</h1>
-}
+    return currentUser ? <h1>You are signed in</h1> : <h1>You are NOT signed in</h1>
+};
 
-Index.getInitialProps = async ({ req }) => {
-    if (typeof window === "undefined") {
-        // we are on the server; base url 'http://ingress-srv.namespace.svc...'
-        const {data} = await axios.get(
-            "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/api/users/currentuser", {
-                headers: req.headers
-        });
-
-        return { currentUser: data };
-    } else {
-        // we are on the browser; base url ''
-        const { data } = await axios.get("/api/users/currentuser");
-        return { currentUser: data };
-    }
-
+Index.getInitialProps = async context => {
+    const client = BuildClient(context);
+    const { data } = await client.get("/api/users/currentuser");
+    
+    return data;
 };
 
 export default Index;
