@@ -1,7 +1,7 @@
 import express, {Response, Request} from "express";
 import { Ticket } from "../models/Ticket";
 import {body} from "express-validator";
-import { NotAuthorizedError, NotFoundError, requireAuth, validateRequest } from "@ticketinglib/common";
+import { BadRequestError, NotAuthorizedError, NotFoundError, requireAuth, validateRequest } from "@ticketinglib/common";
 import { TicketUpdatedPublisher } from "../events/publishers/ticket-updated-publisher";
 import { natsWrapper } from "../nats-wrapper";
 
@@ -26,6 +26,10 @@ router.put("/api/tickets/:id", requireAuth, [
         throw new NotAuthorizedError();
     }
 
+    if (ticket.orderId) {
+        throw new BadRequestError("Cannot edit a reserved ticket");
+    }
+
     ticket.set({
         title: req.body.title,
         price: req.body.price
@@ -34,6 +38,7 @@ router.put("/api/tickets/:id", requireAuth, [
 
     new TicketUpdatedPublisher(natsWrapper.client).publish({
         id: ticket.id,
+        version: ticket.version,
         title: ticket.title,
         price: ticket.price,
         userId: ticket.userId,

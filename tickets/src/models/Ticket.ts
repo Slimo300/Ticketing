@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
 // An interface that describes the properties that are required
 // to create a new User
@@ -13,6 +14,8 @@ interface TicketDoc extends mongoose.Document {
     title: string;
     price: number;
     userId: string;
+    version: number;
+    orderId?: string;
 }
 
 // An interface that describes the properties that a User Model has
@@ -34,24 +37,21 @@ const ticketSchema = new mongoose.Schema({
     userId: {
         type: String,
         required: true
+    }, 
+    orderId: {
+        type: String
     }
 }, {
     toJSON: {
         transform(doc, ret) {
             ret.id = ret._id;
             delete ret._id;
-            delete ret.__v;
         }
     }
 });
 
-// ticketSchema.pre("save", async function (done) {
-//     if (this.isModified("password")) {
-//         // const hashed = await Password.toHash(this.get("password"));
-//         // this.set("password", hashed);
-//     }
-//     done();
-// });
+ticketSchema.set("versionKey", "version");
+ticketSchema.plugin(updateIfCurrentPlugin);
 
 ticketSchema.statics.build = (attrs: TicketAttrs) => {
     return new Ticket(attrs);
