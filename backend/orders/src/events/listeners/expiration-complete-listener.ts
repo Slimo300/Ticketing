@@ -2,9 +2,7 @@ import { ExpirationCompleteEvent, Listener, OrderStatus, Subjects } from "@ticke
 import { queueGroupName } from "./queue-group-name";
 import { Message } from "node-nats-streaming";
 import { Order } from "../../models/Order";
-import { Ticket } from "../../models/Ticket";
 import { OrderCancelledPublisher } from "../publishers/order-cancelled-publisher";
-import { natsWrapper } from "../../nats-wrapper";
 
 export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent> {
     subject: Subjects.ExpirationComplete = Subjects.ExpirationComplete;
@@ -15,13 +13,15 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
         if (!order) {
             throw new Error("Order not found");
         }
+        console.log(`Order ${order.id} cancelled`);
         if (order.status === OrderStatus.Complete) {
             return msg.ack();
         }
 
+        console.log(`Order ${order.id} cancelled`);
         order.set({
             status: OrderStatus.Cancelled,
-        })
+        });
         await order.save();
 
         await new OrderCancelledPublisher(this.client).publish({
