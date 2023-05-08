@@ -16,7 +16,7 @@ build:
           - src: '**/*.js'
             dest: .
     - image: slimo300/auth
-      context: auth
+      context: backend/auth
       docker:
         dockerfile: Dockerfile
       sync:
@@ -24,7 +24,7 @@ build:
           - src: 'src/**/*.ts'
             dest: .
     - image: slimo300/tickets
-      context: tickets
+      context: backend/tickets
       docker:
         dockerfile: Dockerfile
       sync:
@@ -32,7 +32,23 @@ build:
           - src: '**/*.ts'
             dest: .
     - image: slimo300/orders
-      context: orders
+      context: backend/orders
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: '**/*.ts'
+            dest: .
+    - image: slimo300/expiration
+      context: backend/expiration
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: '**/*.ts'
+            dest: .
+    - image: slimo300/payments
+      context: backend/payments
       docker:
         dockerfile: Dockerfile
       sync:
